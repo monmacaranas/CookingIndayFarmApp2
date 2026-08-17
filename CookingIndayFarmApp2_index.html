@@ -1,0 +1,1389 @@
+<!DOCTYPE html>
+<html lang="fil">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="CookingIndayFarmApp 2">
+<meta name="theme-color" content="#2e7d32">
+<title>CookingIndayFarmApp 2 - Kita at Gastos ng Sakahan</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8C%BE%3C/text%3E%3C/svg%3E">
+<style>
+  :root{
+    --green:#2e7d32; --green-dark:#1b5e20; --green-light:#e8f5e9;
+    --red:#c62828; --red-light:#ffebee;
+    --amber:#f57f17; --amber-light:#fff8e1;
+    --ink:#1c1c1c; --gray:#6b6b6b; --line:#e0e0e0; --bg:#f6f7f4; --card:#ffffff;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{height:100%;}
+  body{
+    margin:0; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:var(--bg); color:var(--ink);
+    padding-bottom: calc(72px + env(safe-area-inset-bottom));
+    padding-top: env(safe-area-inset-top);
+  }
+  #app{max-width:520px; margin:0 auto; min-height:100vh; padding:16px 16px 8px;}
+  h1,h2,h3{margin:0 0 8px;}
+  h1{font-size:22px;}
+  h2{font-size:19px;}
+  h3{font-size:16px;}
+  p{margin:4px 0;}
+  .muted{color:var(--gray); font-size:13px;}
+  .row{display:flex; align-items:center; gap:10px;}
+  .row.between{justify-content:space-between;}
+  .row.wrap{flex-wrap:wrap;}
+  .card{background:var(--card); border-radius:16px; padding:16px; margin-bottom:12px; box-shadow:0 1px 3px rgba(0,0,0,0.06); border:1px solid var(--line);}
+  .card.tap{cursor:pointer;}
+  .card.tap:active{background:#f0f0f0;}
+  .pill{display:inline-block; padding:3px 10px; border-radius:99px; font-size:12px; font-weight:600;}
+  .pill.green{background:var(--green-light); color:var(--green-dark);}
+  .pill.red{background:var(--red-light); color:var(--red);}
+  .pill.gray{background:var(--bg); color:var(--gray);}
+  .big-num{font-size:26px; font-weight:800;}
+  .kita-text{color:var(--green-dark);}
+  .gastos-text{color:var(--red);}
+  .grid2{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
+  .grid3{display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px;}
+  .stat-box{background:var(--green-light); border-radius:12px; padding:12px; text-align:center;}
+  .stat-box.red{background:var(--red-light);}
+  .stat-box .label{font-size:12px; color:var(--gray); font-weight:600;}
+  .stat-box .val{font-size:20px; font-weight:800; margin-top:2px;}
+  button{font-family:inherit;}
+  .btn{
+    display:inline-flex; align-items:center; justify-content:center; gap:6px;
+    border:none; border-radius:14px; padding:14px 16px; font-size:16px; font-weight:700;
+    cursor:pointer; width:100%;
+  }
+  .btn:active{transform:scale(0.98);}
+  .btn-green{background:var(--green); color:#fff;}
+  .btn-red{background:var(--red); color:#fff;}
+  .btn-amber{background:var(--amber); color:#fff;}
+  .btn-outline{background:#fff; color:var(--ink); border:2px solid var(--line);}
+  .btn-sm{padding:10px 12px; font-size:14px; width:auto;}
+  .btn-block-row{display:flex; gap:10px;}
+  .btn-block-row .btn{flex:1;}
+  label{display:block; font-size:13px; font-weight:700; margin:14px 0 6px; color:#333;}
+  label:first-child{margin-top:0;}
+  input[type=text], input[type=number], input[type=date], select, textarea{
+    width:100%; padding:13px 12px; font-size:16px; border:2px solid var(--line); border-radius:12px;
+    font-family:inherit; background:#fff; color:var(--ink);
+  }
+  textarea{resize:vertical; min-height:60px;}
+  input:focus, select:focus, textarea:focus{outline:none; border-color:var(--green);}
+  .check-row{display:flex; align-items:center; gap:10px; background:var(--bg); border-radius:12px; padding:12px; margin-top:14px;}
+  .check-row input{width:22px; height:22px; flex:none;}
+  .check-row span{font-size:14px; font-weight:600;}
+  .emoji-pick{font-size:32px; text-align:center; padding:14px 6px;}
+  .emoji-grid{display:grid; grid-template-columns:repeat(6,1fr); gap:6px; margin-top:8px;}
+  .emoji-grid button{font-size:22px; padding:8px 0; border-radius:10px; border:2px solid var(--line); background:#fff;}
+  .emoji-grid button.sel{border-color:var(--green); background:var(--green-light);}
+  .topbar{display:flex; align-items:center; gap:10px; margin-bottom:14px;}
+  .back{font-size:22px; background:none; border:none; padding:4px 8px 4px 0; cursor:pointer; color:var(--ink);}
+  .navbar{
+    position:fixed; bottom:0; left:0; right:0; background:#fff; border-top:1px solid var(--line);
+    display:flex; padding-bottom:env(safe-area-inset-bottom); z-index:50;
+  }
+  .navbar button{
+    flex:1; background:none; border:none; padding:9px 2px 8px; display:flex; flex-direction:column;
+    align-items:center; gap:2px; font-size:10.5px; font-weight:700; color:var(--gray); cursor:pointer;
+  }
+  .navbar button.active{color:var(--green);}
+  .navbar .nicon{font-size:19px;}
+  .fab{
+    position:fixed; right:20px; bottom:calc(88px + env(safe-area-inset-bottom)); z-index:60;
+    background:var(--green); color:#fff; border:none; border-radius:50%; width:60px; height:60px;
+    font-size:28px; box-shadow:0 4px 12px rgba(0,0,0,0.25); cursor:pointer;
+  }
+  .modal-bg{position:fixed; inset:0; background:rgba(0,0,0,0.45); z-index:100; display:flex; align-items:flex-end;}
+  .modal{background:#fff; width:100%; max-width:520px; margin:0 auto; border-radius:20px 20px 0 0; padding:18px 18px calc(18px + env(safe-area-inset-bottom)); max-height:88vh; overflow-y:auto;}
+  .modal-handle{width:40px; height:4px; background:var(--line); border-radius:2px; margin:0 auto 12px;}
+  .seg{display:flex; background:var(--bg); border-radius:12px; padding:4px; margin-bottom:14px; gap:4px;}
+  .seg button{flex:1; border:none; background:none; padding:9px 4px; border-radius:9px; font-size:13px; font-weight:700; color:var(--gray); cursor:pointer;}
+  .seg button.active{background:#fff; color:var(--green-dark); box-shadow:0 1px 3px rgba(0,0,0,0.15);}
+  .entry-item{display:flex; align-items:center; gap:10px; padding:10px 0; border-bottom:1px solid var(--line);}
+  .entry-item:last-child{border-bottom:none;}
+  .entry-icon{width:36px; height:36px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:16px; flex:none;}
+  .entry-icon.kita{background:var(--green-light);}
+  .entry-icon.gastos{background:var(--red-light);}
+  .entry-main{flex:1; min-width:0;}
+  .entry-main .t1{font-weight:700; font-size:14px;}
+  .entry-main .t2{font-size:12px; color:var(--gray);}
+  .entry-amt{font-weight:800; font-size:14px; white-space:nowrap;}
+  .empty-state{text-align:center; padding:30px 10px; color:var(--gray);}
+  .empty-state .e{font-size:40px; margin-bottom:8px;}
+  .toast{
+    position:fixed; top:calc(14px + env(safe-area-inset-top)); left:50%; transform:translateX(-50%);
+    background:#222; color:#fff; padding:10px 18px; border-radius:99px; font-size:13px; z-index:200;
+    box-shadow:0 4px 10px rgba(0,0,0,0.3); max-width:88%; text-align:center;
+  }
+  a.linklike{color:var(--green-dark); font-weight:700; text-decoration:underline; cursor:pointer;}
+  hr{border:none; border-top:1px solid var(--line); margin:14px 0;}
+  table{width:100%; border-collapse:collapse; font-size:13px;}
+  table th, table td{padding:6px 4px; text-align:left; border-bottom:1px solid var(--line);}
+  table th{color:var(--gray); font-size:11px; text-transform:uppercase;}
+  .swatch{display:inline-block; width:10px; height:10px; border-radius:3px; margin-right:5px;}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div class="navbar" id="navbar"></div>
+
+<script type="module">
+/* =========================================================
+   FARMBOOK - simple farm income/expense + inventory tracker
+   Data is now CENTRALIZED in Firebase Firestore, shared by every
+   device that logs in with the one family account, protected by
+   Firebase Authentication. Firestore's offline cache means the
+   app keeps working with no internet and syncs once reconnected.
+
+   Data model:
+   - products: things you SELL and keep STOCK of (Baboy, Sitaw, Patola...)
+   - expenseTypes: KINDS of cost (Abono, Pestisidyo, Paggawa/Labor,
+     Binhi/Hayop, Iba pa) - separate from products, since expenses
+     usually aren't about one specific crop/animal.
+   - entries: type 'kita' (always tied to a productId) or
+     'gastos' (tied to an expenseTypeId, and OPTIONALLY to a
+     productId if the user wants to attribute the cost to a
+     specific crop/animal; null productId = general farm expense).
+   ========================================================= */
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
+import {
+  getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut
+} from "https://www.gstatic.com/firebasejs/12.16.0/firebase-auth.js";
+import {
+  getFirestore, initializeFirestore, persistentLocalCache, persistentSingleTabManager,
+  doc, onSnapshot, setDoc
+} from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCynOP310W-rdGRTgzOk8h22oy92Vd76Hk",
+  authDomain: "cooking-inday-farm-app.firebaseapp.com",
+  projectId: "cooking-inday-farm-app",
+  storageBucket: "cooking-inday-farm-app.firebasestorage.app",
+  messagingSenderId: "754547818931",
+  appId: "1:754547818931:web:da53fc586ecfa70f8d4bc6",
+  measurementId: "G-T6GY554JV5"
+};
+
+const fbApp = initializeApp(firebaseConfig);
+const auth = getAuth(fbApp);
+let db;
+try{
+  db = initializeFirestore(fbApp, { localCache: persistentLocalCache({ tabManager: persistentSingleTabManager() }) });
+}catch(e){
+  console.warn("Offline cache setup failed, falling back to default Firestore:", e);
+  db = getFirestore(fbApp);
+}
+const sharedDocRef = doc(db, "farmbook", "shared2");
+let CURRENT_USER = null;
+let UNSUB_SNAPSHOT = null;
+
+function todayStr(){
+  const d = new Date();
+  return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+}
+function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,8); }
+
+function defaultData(){
+  return {
+    products: [
+      {id:"baboy", name:"Baboy", emoji:"🐷", unit:"ulo", archived:false},
+      {id:"sitaw", name:"Sitaw", emoji:"🫛", unit:"kilo", archived:false},
+      {id:"patola", name:"Patola", emoji:"🥒", unit:"kilo", archived:false}
+    ],
+    expenseTypes: [
+      {id:"binhi_hayop", name:"Binhi / Hayop (Bili ng Stock)", emoji:"🐣", archived:false},
+      {id:"abono", name:"Abono", emoji:"🌾", archived:false},
+      {id:"pestisidyo", name:"Pestisidyo", emoji:"🧴", archived:false},
+      {id:"paggawa", name:"Paggawa (hal. harvester, paglilinis ng damo)", emoji:"👷", archived:false},
+      {id:"ibapa", name:"Iba pa", emoji:"📝", archived:false}
+    ],
+    entries: [],
+    stockAdj: []
+  };
+}
+
+let DATA = defaultData();
+
+function migrate(parsed){
+  const d = defaultData();
+  if(Array.isArray(parsed.products)) d.products = parsed.products;
+  if(Array.isArray(parsed.expenseTypes)) d.expenseTypes = parsed.expenseTypes;
+  if(Array.isArray(parsed.stockAdj)) d.stockAdj = parsed.stockAdj;
+  d.entries = Array.isArray(parsed.entries) ? parsed.entries.map(e=>{
+    const ne = Object.assign({}, e);
+    // old field name was categoryId -> now productId
+    if(ne.categoryId !== undefined && ne.productId === undefined){
+      ne.productId = ne.categoryId;
+      delete ne.categoryId;
+    }
+    if(ne.type === "gastos" && !ne.expenseTypeId){
+      ne.expenseTypeId = "ibapa"; // unknown old expenses default to "Iba pa"
+    }
+    if(ne.type === "kita" && ne.productId === undefined){
+      ne.productId = null;
+    }
+    return ne;
+  }) : [];
+  return d;
+}
+
+// Writes the whole DATA blob to the shared Firestore doc. Firestore's
+// offline cache means this resolves instantly from the local cache even
+// with no internet, and syncs to the server (and every other device)
+// once connectivity returns.
+function saveData(){
+  setDoc(sharedDocRef, DATA).catch(err=>{
+    console.error("Save error", err);
+    showToast("Hindi na-save online - susubukan ulit kapag may internet.");
+  });
+}
+
+function formatPeso(n){
+  n = Number(n)||0;
+  const neg = n < 0;
+  n = Math.abs(n);
+  const s = n.toLocaleString("en-PH",{minimumFractionDigits:2, maximumFractionDigits:2});
+  return (neg?"-":"") + "₱" + s;
+}
+function formatNum(n){
+  n = Number(n)||0;
+  return n.toLocaleString("en-PH",{maximumFractionDigits:2});
+}
+
+/* ---------- ROUTING / STATE ---------- */
+let ROUTE = {page:"home"};
+let RANGE = "today"; // today | week | month | year | all
+let TOAST_TIMER = null;
+
+function showToast(msg){
+  let t = document.getElementById("toast");
+  if(t) t.remove();
+  t = document.createElement("div");
+  t.id = "toast";
+  t.className = "toast";
+  t.textContent = msg;
+  document.body.appendChild(t);
+  clearTimeout(TOAST_TIMER);
+  TOAST_TIMER = setTimeout(()=>t.remove(), 1800);
+}
+
+function go(page, params){
+  ROUTE = Object.assign({page:page}, params||{});
+  render();
+  window.scrollTo(0,0);
+}
+
+/* ---------- DATA HELPERS ---------- */
+function activeProducts(){ return DATA.products.filter(c=>!c.archived); }
+function getProduct(id){ return DATA.products.find(c=>c.id===id); }
+function activeExpenseTypes(){ return DATA.expenseTypes.filter(t=>!t.archived); }
+function getExpenseType(id){ return DATA.expenseTypes.find(t=>t.id===id); }
+
+function inRange(dateStr, range, custom){
+  const d = new Date(dateStr+"T00:00:00");
+  const now = new Date();
+  if(range==="all") return true;
+  if(range==="today") return dateStr===todayStr();
+  if(range==="week"){
+    const start = new Date(now); start.setDate(now.getDate()-6); start.setHours(0,0,0,0);
+    return d >= start && d <= now;
+  }
+  if(range==="month"){
+    return d.getFullYear()===now.getFullYear() && d.getMonth()===now.getMonth();
+  }
+  if(range==="year"){
+    return d.getFullYear()===now.getFullYear();
+  }
+  if(range==="custom" && custom){
+    const from = custom.from ? new Date(custom.from+"T00:00:00") : null;
+    const to = custom.to ? new Date(custom.to+"T23:59:59") : null;
+    if(from && d < from) return false;
+    if(to && d > to) return false;
+    return true;
+  }
+  return true;
+}
+
+function totalsFor(entries){
+  let kita=0, gastos=0;
+  entries.forEach(e=>{
+    if(e.type==="kita") kita += Number(e.amount)||0;
+    else gastos += Number(e.amount)||0;
+  });
+  return {kita, gastos, net:kita-gastos};
+}
+
+// entries belonging to a product: its own sales (kita) + any expenses
+// specifically tagged to it (gastos with productId === this product)
+function entriesForProduct(productId){
+  return DATA.entries.filter(e=>e.productId===productId);
+}
+function entriesForExpenseType(expenseTypeId){
+  return DATA.entries.filter(e=>e.type==="gastos" && e.expenseTypeId===expenseTypeId);
+}
+
+function stockFor(productId){
+  let stock = 0;
+  DATA.entries.filter(e=>e.productId===productId && e.affectsStock).forEach(e=>{
+    const q = Number(e.qty)||0;
+    if(e.type==="kita") stock -= q;      // sold -> reduces stock
+    else stock += q;                     // bought/added -> increases stock
+  });
+  DATA.stockAdj.filter(a=>a.productId===productId).forEach(a=>{
+    stock += Number(a.delta)||0;
+  });
+  return stock;
+}
+
+/* ---------- RENDER ROOT ---------- */
+function render(){
+  const app = document.getElementById("app");
+  app.innerHTML = "";
+  if(ROUTE.page==="home") app.appendChild(viewHome());
+  else if(ROUTE.page==="products") app.appendChild(viewProducts());
+  else if(ROUTE.page==="product") app.appendChild(viewProduct(ROUTE.productId));
+  else if(ROUTE.page==="gastos") app.appendChild(viewGastosHub());
+  else if(ROUTE.page==="expenseType") app.appendChild(viewExpenseType(ROUTE.expenseTypeId));
+  else if(ROUTE.page==="reports") app.appendChild(viewReports());
+  else if(ROUTE.page==="settings") app.appendChild(viewSettings());
+  renderNavbar();
+}
+
+function el(html){
+  const t = document.createElement("template");
+  t.innerHTML = html.trim();
+  return t.content.firstElementChild;
+}
+
+function renderNavbar(){
+  const nav = document.getElementById("navbar");
+  const items = [
+    {p:"home", icon:"🏠", label:"Home"},
+    {p:"products", icon:"📦", label:"Produkto"},
+    {p:"gastos", icon:"💸", label:"Gastos"},
+    {p:"reports", icon:"📊", label:"Ulat"},
+    {p:"settings", icon:"⚙️", label:"Settings"}
+  ];
+  nav.innerHTML = "";
+  items.forEach(it=>{
+    const b = document.createElement("button");
+    const active = (ROUTE.page===it.p) || (it.p==="products" && ROUTE.page==="product") || (it.p==="gastos" && ROUTE.page==="expenseType");
+    b.className = active ? "active":"";
+    b.innerHTML = `<span class="nicon">${it.icon}</span><span>${it.label}</span>`;
+    b.onclick = ()=> go(it.p);
+    nav.appendChild(b);
+  });
+}
+
+/* ---------- HOME VIEW ---------- */
+function viewHome(){
+  const wrap = el(`<div></div>`);
+  wrap.appendChild(el(`<h1>🌾 CookingIndayFarmApp 2</h1>`));
+  wrap.appendChild(el(`<p class="muted" style="margin-bottom:14px;">Kumusta! Ito ang buod ng iyong sakahan.</p>`));
+
+  const seg = el(`<div class="seg"></div>`);
+  [["today","Ngayon"],["week","Linggo"],["month","Buwan"],["year","Taon"],["all","Lahat"]].forEach(([k,l])=>{
+    const b = document.createElement("button");
+    b.textContent = l;
+    b.className = RANGE===k ? "active":"";
+    b.onclick = ()=>{ RANGE=k; render(); };
+    seg.appendChild(b);
+  });
+  wrap.appendChild(seg);
+
+  const filtered = DATA.entries.filter(e=>inRange(e.date, RANGE));
+  const t = totalsFor(filtered);
+
+  const summary = el(`
+    <div class="card">
+      <div class="grid3">
+        <div class="stat-box">
+          <div class="label">KITA</div>
+          <div class="val kita-text">${formatPeso(t.kita)}</div>
+        </div>
+        <div class="stat-box red">
+          <div class="label">GASTOS</div>
+          <div class="val gastos-text">${formatPeso(t.gastos)}</div>
+        </div>
+        <div class="stat-box" style="background:${t.net>=0?'var(--green-light)':'var(--red-light)'};">
+          <div class="label">TUBO (NET)</div>
+          <div class="val" style="color:${t.net>=0?'var(--green-dark)':'var(--red)'};">${formatPeso(t.net)}</div>
+        </div>
+      </div>
+    </div>
+  `);
+  wrap.appendChild(summary);
+
+  wrap.appendChild(el(`<h2 style="margin-top:6px;">Mga Produkto</h2>`));
+  const prods = activeProducts();
+  if(prods.length===0){
+    wrap.appendChild(el(`<div class="empty-state"><div class="e">📦</div><p>Wala pang produkto. Magdagdag sa Settings.</p></div>`));
+  } else {
+    prods.forEach(c=>{
+      const pe = entriesForProduct(c.id).filter(e=>inRange(e.date,RANGE));
+      const pt = totalsFor(pe);
+      const stock = stockFor(c.id);
+      const card = el(`
+        <div class="card tap">
+          <div class="row between">
+            <div class="row"><span style="font-size:26px;">${c.emoji}</span>
+              <div>
+                <div style="font-weight:800; font-size:16px;">${c.name}</div>
+                <div class="muted">Stock: ${formatNum(stock)} ${c.unit}</div>
+              </div>
+            </div>
+            <div style="text-align:right;">
+              <div class="big-num" style="font-size:16px; color:${pt.net>=0?'var(--green-dark)':'var(--red)'};">${formatPeso(pt.net)}</div>
+              <div class="muted" style="font-size:11px;">tubo</div>
+            </div>
+          </div>
+        </div>
+      `);
+      card.onclick = ()=> go("product",{productId:c.id});
+      wrap.appendChild(card);
+    });
+  }
+
+  const addBtn = el(`<button class="btn btn-outline" style="margin-top:6px;">＋ Magdagdag ng Bagong Produkto</button>`);
+  addBtn.onclick = ()=> openProductModal();
+  wrap.appendChild(addBtn);
+
+  const fab = el(`<button class="fab">＋</button>`);
+  fab.onclick = ()=> openQuickAdd();
+  wrap.appendChild(fab);
+
+  return wrap;
+}
+
+/* ---------- QUICK ADD (FAB): choose Kita or Gastos first ---------- */
+function openQuickAdd(){
+  const body = el(`<div></div>`);
+  body.appendChild(el(`<h3>Magdagdag ng Bago</h3>`));
+  const row = el(`<div class="btn-block-row"></div>`);
+  const kBtn = el(`<button class="btn btn-green">➕ Kita</button>`);
+  kBtn.onclick = ()=>{ closeModal(); openQuickAddKita(); };
+  const gBtn = el(`<button class="btn btn-red">➖ Gastos</button>`);
+  gBtn.onclick = ()=>{ closeModal(); pickProductThen("Para saang Produkto ang Gastos?", pid=>openGastosForm({productId:pid})); };
+  row.appendChild(kBtn); row.appendChild(gBtn);
+  body.appendChild(row);
+  openModal(body);
+}
+
+function openQuickAddKita(){
+  pickProductThen("Anong Produkto ang Nabenta?", pid=>openEntryForm(pid, "kita"));
+}
+
+// Gastos is always tied to a specific product - just a different kind of
+// category (Abono, Pestisidyo, Paggawa...) than the product itself.
+// This shows a product picker first, then hands off to a callback.
+function pickProductThen(question, callback){
+  const prods = activeProducts();
+  if(prods.length===0){ showToast("Magdagdag muna ng produkto sa Settings"); return; }
+  const body = el(`<div></div>`);
+  body.appendChild(el(`<h3>${escapeHtml(question)}</h3>`));
+  prods.forEach(c=>{
+    const b = el(`<div class="card tap" style="margin-bottom:8px; padding:12px 16px;">
+      <div class="row"><span style="font-size:22px;">${c.emoji}</span><span style="font-weight:700;">${c.name}</span></div>
+    </div>`);
+    b.onclick = ()=>{ closeModal(); callback(c.id); };
+    body.appendChild(b);
+  });
+  openModal(body);
+}
+
+/* ---------- PRODUCTS LIST VIEW ---------- */
+function viewProducts(){
+  const wrap = el(`<div></div>`);
+  wrap.appendChild(el(`<div class="topbar"><h1>📦 Mga Produkto</h1></div>`));
+  wrap.appendChild(el(`<p class="muted" style="margin-top:-8px;">Ang mga bagay na binebenta mo at may stock (Kita + Imbentaryo).</p>`));
+  const prods = DATA.products;
+  if(prods.length===0){
+    wrap.appendChild(el(`<div class="empty-state"><div class="e">📦</div><p>Wala pang produkto.</p></div>`));
+  }
+  prods.forEach(c=>{
+    const stock = stockFor(c.id);
+    const all = totalsFor(entriesForProduct(c.id));
+    const card = el(`
+      <div class="card ${c.archived?'':'tap'}" style="opacity:${c.archived?0.5:1};">
+        <div class="row between">
+          <div class="row"><span style="font-size:26px;">${c.emoji}</span>
+            <div>
+              <div style="font-weight:800; font-size:16px;">${c.name} ${c.archived?'<span class="pill red">Naka-archive</span>':''}</div>
+              <div class="muted">Stock: ${formatNum(stock)} ${c.unit} · Kabuuang Tubo: ${formatPeso(all.net)}</div>
+            </div>
+          </div>
+          <span style="font-size:20px;">›</span>
+        </div>
+      </div>
+    `);
+    if(!c.archived) card.onclick = ()=> go("product",{productId:c.id});
+    wrap.appendChild(card);
+  });
+  const addBtn = el(`<button class="btn btn-green" style="margin-top:10px;">＋ Bagong Produkto</button>`);
+  addBtn.onclick = ()=> openProductModal();
+  wrap.appendChild(addBtn);
+  wrap.appendChild(el(`<p class="muted" style="text-align:center; margin-top:16px;">Halimbawa ng maidadagdag: Pipino 🥒, Alugbati 🍃, Kangkong 🌱, at iba pa.</p>`));
+  return wrap;
+}
+
+/* ---------- PRODUCT DETAIL VIEW ---------- */
+let PRODUCT_TAB = "log"; // log | stock
+
+function viewProduct(productId){
+  const c = getProduct(productId);
+  const wrap = el(`<div></div>`);
+  if(!c){
+    wrap.appendChild(el(`<p>Hindi nahanap ang produkto.</p>`));
+    return wrap;
+  }
+  const back = el(`<button class="back">←</button>`);
+  back.onclick = ()=> go("products");
+  const top = el(`<div class="topbar"></div>`);
+  top.appendChild(back);
+  top.appendChild(el(`<h1>${c.emoji} ${c.name}</h1>`));
+  wrap.appendChild(top);
+
+  const stock = stockFor(productId);
+  const all = totalsFor(entriesForProduct(productId));
+
+  wrap.appendChild(el(`
+    <div class="card">
+      <div class="row between" style="margin-bottom:10px;">
+        <div>
+          <div class="muted" style="font-size:12px;">KASALUKUYANG STOCK</div>
+          <div class="big-num">${formatNum(stock)} <span style="font-size:16px; font-weight:600;">${c.unit}</span></div>
+        </div>
+        <div style="text-align:right;">
+          <div class="muted" style="font-size:12px;">TUBO</div>
+          <div class="big-num" style="font-size:20px; color:${all.net>=0?'var(--green-dark)':'var(--red)'};">${formatPeso(all.net)}</div>
+        </div>
+      </div>
+      <div class="grid2">
+        <div class="stat-box"><div class="label">KITA</div><div class="val kita-text">${formatPeso(all.kita)}</div></div>
+        <div class="stat-box red"><div class="label">GASTOS</div><div class="val gastos-text">${formatPeso(all.gastos)}</div></div>
+      </div>
+      <p class="muted" style="margin-top:8px;">*Tingnan ang tab na Gastos para makita ang breakdown ayon sa uri (Abono, Pestisidyo, Paggawa, atbp) sa lahat ng produkto.</p>
+    </div>
+  `));
+
+  const btnRow = el(`<div class="btn-block-row" style="margin-bottom:10px;"></div>`);
+  const bKita = el(`<button class="btn btn-green">＋ Kita</button>`);
+  bKita.onclick = ()=> openEntryForm(productId,"kita");
+  const bGastos = el(`<button class="btn btn-red">＋ Gastos</button>`);
+  bGastos.onclick = ()=> openGastosForm({productId: productId});
+  btnRow.appendChild(bKita); btnRow.appendChild(bGastos);
+  wrap.appendChild(btnRow);
+  const stockBtn = el(`<button class="btn btn-amber" style="margin-bottom:14px;">📦 I-adjust ang Stock (walang kita/gastos)</button>`);
+  stockBtn.onclick = ()=> openStockAdjustForm(productId);
+  wrap.appendChild(stockBtn);
+
+  const seg = el(`<div class="seg"></div>`);
+  [["log","Talaan"],["stock","Kasaysayan ng Stock"]].forEach(([k,l])=>{
+    const b = document.createElement("button");
+    b.textContent = l; b.className = PRODUCT_TAB===k?"active":"";
+    b.onclick = ()=>{ PRODUCT_TAB=k; render(); };
+    seg.appendChild(b);
+  });
+  wrap.appendChild(seg);
+
+  const listCard = el(`<div class="card"></div>`);
+  if(PRODUCT_TAB==="log"){
+    const list = entriesForProduct(productId).sort((a,b)=>(b.date+b.createdAt).localeCompare(a.date+a.createdAt));
+    if(list.length===0){
+      listCard.appendChild(el(`<div class="empty-state"><div class="e">📝</div><p>Wala pang naitalang kita o gastos.</p></div>`));
+    } else {
+      list.forEach(e=>{
+        const et = e.type==="gastos" ? getExpenseType(e.expenseTypeId) : null;
+        const label = e.type==="kita" ? "Kita" : (et?et.name:"Gastos");
+        const item = el(`
+          <div class="entry-item">
+            <div class="entry-icon ${e.type}">${e.type==="kita"?"⬆️":"⬇️"}</div>
+            <div class="entry-main">
+              <div class="t1">${escapeHtml(label)}${e.note?(" · "+escapeHtml(e.note)):""}</div>
+              <div class="t2">${e.date}${e.qty?(" · "+formatNum(e.qty)+" "+c.unit):""}</div>
+            </div>
+            <div class="entry-amt ${e.type==="kita"?"kita-text":"gastos-text"}">${e.type==="kita"?"+":"-"}${formatPeso(e.amount)}</div>
+          </div>
+        `);
+        item.style.cursor="pointer";
+        item.onclick = ()=> openEntryDetail(e.id);
+        listCard.appendChild(item);
+      });
+    }
+  } else {
+    const adjs = DATA.stockAdj.filter(a=>a.productId===productId).sort((a,b)=>(b.date+b.createdAt).localeCompare(a.date+a.createdAt));
+    const moneyMoves = entriesForProduct(productId).filter(e=>e.affectsStock).map(e=>({
+      date:e.date, delta: e.type==="kita" ? -Number(e.qty||0) : Number(e.qty||0),
+      reason: (e.type==="kita"?"Nabenta":"Naidagdag")+(e.note?(" - "+e.note):""), createdAt:e.createdAt
+    }));
+    const combined = [...adjs, ...moneyMoves].sort((a,b)=>(b.date+b.createdAt).localeCompare(a.date+a.createdAt));
+    if(combined.length===0){
+      listCard.appendChild(el(`<div class="empty-state"><div class="e">📦</div><p>Wala pang galaw ng stock.</p></div>`));
+    } else {
+      combined.forEach(a=>{
+        const item = el(`
+          <div class="entry-item">
+            <div class="entry-icon ${a.delta>=0?'kita':'gastos'}">${a.delta>=0?"＋":"－"}</div>
+            <div class="entry-main">
+              <div class="t1">${escapeHtml(a.reason||"Stock adjustment")}</div>
+              <div class="t2">${a.date}</div>
+            </div>
+            <div class="entry-amt">${a.delta>=0?"+":""}${formatNum(a.delta)} ${c.unit}</div>
+          </div>
+        `);
+        listCard.appendChild(item);
+      });
+    }
+  }
+  wrap.appendChild(listCard);
+  return wrap;
+}
+
+function escapeHtml(s){
+  const d = document.createElement("div");
+  d.textContent = s;
+  return d.innerHTML;
+}
+
+function openEntryDetail(entryId){
+  const e = DATA.entries.find(x=>x.id===entryId);
+  if(!e) return;
+  const body = el(`<div></div>`);
+  if(e.type==="kita"){
+    const c = getProduct(e.productId);
+    body.appendChild(el(`<h3>Kita - ${c?c.name:""}</h3>`));
+  } else {
+    const et = getExpenseType(e.expenseTypeId);
+    const c = e.productId ? getProduct(e.productId) : null;
+    body.appendChild(el(`<h3>Gastos: ${et?et.name:"?"}</h3>`));
+    body.appendChild(el(`<p><b>Produkto:</b> ${c ? (c.emoji+" "+c.name) : "Pangkalahatan (hindi partikular)"}</p>`));
+  }
+  body.appendChild(el(`<p><b>Halaga:</b> ${formatPeso(e.amount)}</p>`));
+  body.appendChild(el(`<p><b>Petsa:</b> ${e.date}</p>`));
+  const c2 = getProduct(e.productId);
+  if(e.qty) body.appendChild(el(`<p><b>Dami:</b> ${formatNum(e.qty)} ${c2?c2.unit:""}</p>`));
+  if(e.note) body.appendChild(el(`<p><b>Tala:</b> ${escapeHtml(e.note)}</p>`));
+  const delBtn = el(`<button class="btn btn-outline" style="margin-top:14px; color:var(--red); border-color:var(--red);">🗑️ Burahin ang Entry</button>`);
+  delBtn.onclick = ()=>{
+    DATA.entries = DATA.entries.filter(x=>x.id!==entryId);
+    saveData(); closeModal(); render(); showToast("Naburahin na");
+  };
+  body.appendChild(delBtn);
+  openModal(body);
+}
+
+/* ---------- KITA ENTRY FORM (always tied to a product) ---------- */
+function openEntryForm(productId, type){
+  const c = getProduct(productId);
+  const body = el(`<div></div>`);
+  body.appendChild(el(`<h3>➕ Idagdag na Kita - ${c.emoji} ${c.name}</h3>`));
+
+  body.appendChild(el(`<label>Halaga (₱)</label>`));
+  const amt = el(`<input type="number" inputmode="decimal" placeholder="0.00" min="0" step="0.01">`);
+  body.appendChild(amt);
+
+  body.appendChild(el(`<label>Petsa</label>`));
+  const dateInp = el(`<input type="date">`);
+  dateInp.value = todayStr();
+  body.appendChild(dateInp);
+
+  body.appendChild(el(`<label>Dami (opsyonal) - ${c.unit}</label>`));
+  const qtyInp = el(`<input type="number" inputmode="decimal" placeholder="hal. 5">`);
+  body.appendChild(qtyInp);
+
+  const checkRow = el(`
+    <div class="check-row">
+      <input type="checkbox" id="stockChk" checked>
+      <span>Bawasan ang stock (nabenta)</span>
+    </div>
+  `);
+  body.appendChild(checkRow);
+
+  body.appendChild(el(`<label>Tala (opsyonal)</label>`));
+  const note = el(`<textarea placeholder="hal. Binenta kay Aling Nena"></textarea>`);
+  body.appendChild(note);
+
+  const saveBtn = el(`<button class="btn btn-green" style="margin-top:16px;">I-save</button>`);
+  saveBtn.onclick = ()=>{
+    const amount = parseFloat(amt.value);
+    if(isNaN(amount) || amount<0){ showToast("Ilagay ang tamang halaga"); return; }
+    const qty = qtyInp.value ? parseFloat(qtyInp.value) : null;
+    const entry = {
+      id: uid(), type: "kita", productId: productId, amount: amount,
+      date: dateInp.value || todayStr(), qty: qty,
+      affectsStock: !!(document.getElementById("stockChk").checked && qty),
+      note: note.value.trim(), createdAt: Date.now().toString()
+    };
+    DATA.entries.push(entry);
+    saveData();
+    closeModal();
+    render();
+    showToast("Nai-save na! ✅");
+  };
+  body.appendChild(saveBtn);
+  openModal(body);
+  setTimeout(()=>amt.focus(), 250);
+}
+
+/* ---------- GASTOS ENTRY FORM ----------
+   Every gastos entry is tied to a specific product (same as Kita) -
+   the Uri ng Gastos (Abono, Pestisidyo, Paggawa...) is a SEPARATE
+   categorization of what kind of cost it was, not a replacement for
+   which product it's for. */
+// opts: {expenseTypeId, productId} - productId is required; if not given
+// the caller must have already picked a product (see pickProductThen).
+function openGastosForm(opts){
+  opts = opts||{};
+  const types = activeExpenseTypes();
+  if(types.length===0){ showToast("Magdagdag muna ng Uri ng Gastos sa Settings"); return; }
+  const prods = activeProducts();
+  if(prods.length===0){ showToast("Magdagdag muna ng produkto sa Settings"); return; }
+  const c = getProduct(opts.productId) || prods[0];
+
+  const body = el(`<div></div>`);
+  body.appendChild(el(`<h3>➖ Idagdag na Gastos - ${c.emoji} ${c.name}</h3>`));
+
+  body.appendChild(el(`<label>Alin sa Produkto?</label>`));
+  const prodSel = el(`<select></select>`);
+  prods.forEach(p=>{
+    const o = document.createElement("option");
+    o.value = p.id; o.textContent = p.emoji+" "+p.name;
+    if(c.id===p.id) o.selected = true;
+    prodSel.appendChild(o);
+  });
+  body.appendChild(prodSel);
+
+  body.appendChild(el(`<label>Uri ng Gastos</label>`));
+  const typeSel = el(`<select></select>`);
+  types.forEach(t=>{
+    const o = document.createElement("option");
+    o.value = t.id; o.textContent = t.emoji+" "+t.name;
+    if(opts.expenseTypeId===t.id) o.selected = true;
+    typeSel.appendChild(o);
+  });
+  body.appendChild(typeSel);
+
+  body.appendChild(el(`<label>Halaga (₱)</label>`));
+  const amt = el(`<input type="number" inputmode="decimal" placeholder="0.00" min="0" step="0.01">`);
+  body.appendChild(amt);
+
+  body.appendChild(el(`<label>Petsa</label>`));
+  const dateInp = el(`<input type="date">`);
+  dateInp.value = todayStr();
+  body.appendChild(dateInp);
+
+  const qtyLabelWrap = el(`<div></div>`);
+  const qtyInp = el(`<input type="number" inputmode="decimal" placeholder="hal. 5" id="gastosQty">`);
+  const checkRow = el(`
+    <div class="check-row">
+      <input type="checkbox" id="stockChk">
+      <span></span>
+    </div>
+  `);
+  function refreshUnitLabels(){
+    const prod = getProduct(prodSel.value);
+    qtyLabelWrap.innerHTML = "";
+    qtyLabelWrap.appendChild(el(`<label>Dami (opsyonal) - ${prod?prod.unit:""}</label>`));
+    checkRow.querySelector("span").textContent = "Idagdag sa stock ng "+(prod?prod.name:"")+" (hal. bumili ng binhi/hayop)";
+  }
+  prodSel.onchange = refreshUnitLabels;
+  refreshUnitLabels();
+  body.appendChild(qtyLabelWrap);
+  body.appendChild(qtyInp);
+  body.appendChild(checkRow);
+
+  body.appendChild(el(`<label>Tala (opsyonal)</label>`));
+  const note = el(`<textarea placeholder="hal. Pag-upa ng harvester"></textarea>`);
+  body.appendChild(note);
+
+  const saveBtn = el(`<button class="btn btn-red" style="margin-top:16px;">I-save</button>`);
+  saveBtn.onclick = ()=>{
+    const amount = parseFloat(amt.value);
+    if(isNaN(amount) || amount<0){ showToast("Ilagay ang tamang halaga"); return; }
+    const productId = prodSel.value;
+    const stockEl = document.getElementById("stockChk");
+    const qty = qtyInp.value ? parseFloat(qtyInp.value) : null;
+    const entry = {
+      id: uid(), type: "gastos", expenseTypeId: typeSel.value, productId: productId,
+      amount: amount, date: dateInp.value||todayStr(), qty: qty,
+      affectsStock: !!(stockEl && stockEl.checked && qty),
+      note: note.value.trim(), createdAt: Date.now().toString()
+    };
+    DATA.entries.push(entry);
+    saveData();
+    closeModal();
+    render();
+    showToast("Nai-save na! ✅");
+  };
+  body.appendChild(saveBtn);
+  openModal(body);
+  setTimeout(()=>amt.focus(), 250);
+}
+
+/* ---------- STOCK ADJUST FORM ---------- */
+function openStockAdjustForm(productId){
+  const c = getProduct(productId);
+  const body = el(`<div></div>`);
+  body.appendChild(el(`<h3>📦 I-adjust ang Stock - ${c.emoji} ${c.name}</h3>`));
+  body.appendChild(el(`<p class="muted">Gamitin ito kapag may inani/nadagdag o nasira/namatay na hindi kasama sa kita o gastos.</p>`));
+
+  const seg = el(`<div class="seg"></div>`);
+  let mode = "add";
+  const bAdd = document.createElement("button"); bAdd.textContent="＋ Magdagdag"; bAdd.className="active";
+  const bSub = document.createElement("button"); bSub.textContent="－ Magbawas";
+  bAdd.onclick = ()=>{ mode="add"; bAdd.className="active"; bSub.className=""; };
+  bSub.onclick = ()=>{ mode="sub"; bSub.className="active"; bAdd.className=""; };
+  seg.appendChild(bAdd); seg.appendChild(bSub);
+  body.appendChild(seg);
+
+  body.appendChild(el(`<label>Dami (${c.unit})</label>`));
+  const qtyInp = el(`<input type="number" inputmode="decimal" placeholder="hal. 10">`);
+  body.appendChild(qtyInp);
+
+  body.appendChild(el(`<label>Petsa</label>`));
+  const dateInp = el(`<input type="date">`);
+  dateInp.value = todayStr();
+  body.appendChild(dateInp);
+
+  body.appendChild(el(`<label>Dahilan (opsyonal)</label>`));
+  const reason = el(`<input type="text" placeholder="hal. Inani, Namatay, Nasira">`);
+  body.appendChild(reason);
+
+  const saveBtn = el(`<button class="btn btn-amber" style="margin-top:16px;">I-save</button>`);
+  saveBtn.onclick = ()=>{
+    const q = parseFloat(qtyInp.value);
+    if(isNaN(q) || q<=0){ showToast("Ilagay ang tamang dami"); return; }
+    DATA.stockAdj.push({
+      id: uid(), productId: productId,
+      delta: mode==="add" ? q : -q,
+      date: dateInp.value||todayStr(), reason: reason.value.trim(), createdAt: Date.now().toString()
+    });
+    saveData(); closeModal(); render(); showToast("Na-update ang stock ✅");
+  };
+  body.appendChild(saveBtn);
+  openModal(body);
+}
+
+/* ---------- PRODUCT CREATE/EDIT MODAL ---------- */
+const EMOJI_CHOICES = ["🐷","🐔","🐐","🐄","🥬","🥒","🍆","🌽","🍅","🥔","🍠","🌶️","🫑","🥕","🍌","🍍","🫘","🍃","🌱","🌾"];
+
+function openProductModal(){
+  const body = el(`<div></div>`);
+  body.appendChild(el(`<h3>＋ Bagong Produkto</h3>`));
+  body.appendChild(el(`<label>Pangalan</label>`));
+  const nameInp = el(`<input type="text" placeholder="hal. Pipino">`);
+  body.appendChild(nameInp);
+
+  body.appendChild(el(`<label>Piliin ang Icon</label>`));
+  const grid = el(`<div class="emoji-grid"></div>`);
+  let selEmoji = EMOJI_CHOICES[0];
+  EMOJI_CHOICES.forEach((em,i)=>{
+    const b = document.createElement("button");
+    b.textContent = em;
+    if(i===0) b.className="sel";
+    b.onclick = ()=>{ selEmoji=em; [...grid.children].forEach(x=>x.className=""); b.className="sel"; };
+    grid.appendChild(b);
+  });
+  body.appendChild(grid);
+
+  body.appendChild(el(`<label>Unit ng Sukat</label>`));
+  const unitInp = el(`<input type="text" placeholder="hal. kilo, ulo, piraso, sako">`);
+  body.appendChild(unitInp);
+
+  const saveBtn = el(`<button class="btn btn-green" style="margin-top:16px;">I-save</button>`);
+  saveBtn.onclick = ()=>{
+    const name = nameInp.value.trim();
+    if(!name){ showToast("Ilagay ang pangalan ng produkto"); return; }
+    DATA.products.push({
+      id: uid(), name: name, emoji: selEmoji, unit: unitInp.value.trim()||"piraso", archived:false
+    });
+    saveData(); closeModal(); render(); showToast("Naidagdag ang produkto! ✅");
+  };
+  body.appendChild(saveBtn);
+  openModal(body);
+}
+
+function openProductManage(cat){
+  const body = el(`<div></div>`);
+  body.appendChild(el(`<h3>${cat.emoji} ${cat.name}</h3>`));
+  const archBtn = el(`<button class="btn btn-outline" style="margin-top:8px;">${cat.archived?"↩️ I-restore":"📥 I-archive"}</button>`);
+  archBtn.onclick = ()=>{
+    cat.archived = !cat.archived;
+    saveData(); closeModal(); render();
+  };
+  body.appendChild(archBtn);
+  const delBtn = el(`<button class="btn btn-outline" style="margin-top:8px; color:var(--red); border-color:var(--red);">🗑️ Burahin nang Tuluyan</button>`);
+  delBtn.onclick = ()=>{
+    if(!confirm("Sigurado ka bang burahin ang produktong ito pati lahat ng entries nito? Hindi na ito maibabalik.")) return;
+    DATA.products = DATA.products.filter(c=>c.id!==cat.id);
+    DATA.entries = DATA.entries.filter(e=>e.productId!==cat.id);
+    DATA.stockAdj = DATA.stockAdj.filter(a=>a.productId!==cat.id);
+    saveData(); closeModal(); go("products");
+  };
+  body.appendChild(delBtn);
+  openModal(body);
+}
+
+/* ---------- GASTOS HUB (list of expense types) ---------- */
+function viewGastosHub(){
+  const wrap = el(`<div></div>`);
+  wrap.appendChild(el(`<h1>💸 Gastos</h1>`));
+  wrap.appendChild(el(`<p class="muted" style="margin-top:-8px;">Mga uri ng gastos sa pagpapatakbo ng sakahan (Abono, Pestisidyo, Paggawa, atbp) - bawat entry ay nakatali pa rin sa isang partikular na produkto.</p>`));
+
+  const types = DATA.expenseTypes;
+  if(types.length===0){
+    wrap.appendChild(el(`<div class="empty-state"><div class="e">💸</div><p>Wala pang uri ng gastos.</p></div>`));
+  }
+  types.forEach(t=>{
+    const te = entriesForExpenseType(t.id);
+    const total = te.reduce((s,e)=>s+(Number(e.amount)||0),0);
+    const card = el(`
+      <div class="card ${t.archived?'':'tap'}" style="opacity:${t.archived?0.5:1};">
+        <div class="row between">
+          <div class="row"><span style="font-size:26px;">${t.emoji}</span>
+            <div>
+              <div style="font-weight:800; font-size:16px;">${t.name} ${t.archived?'<span class="pill red">Naka-archive</span>':''}</div>
+              <div class="muted">${te.length} entries · Kabuuan: ${formatPeso(total)}</div>
+            </div>
+          </div>
+          <span style="font-size:20px;">›</span>
+        </div>
+      </div>
+    `);
+    if(!t.archived) card.onclick = ()=> go("expenseType",{expenseTypeId:t.id});
+    wrap.appendChild(card);
+  });
+
+  const addTypeBtn = el(`<button class="btn btn-outline" style="margin-top:6px;">＋ Bagong Uri ng Gastos</button>`);
+  addTypeBtn.onclick = ()=> openExpenseTypeModal();
+  wrap.appendChild(addTypeBtn);
+
+  const addBtn = el(`<button class="btn btn-red" style="margin-top:10px;">➖ Magdagdag ng Gastos</button>`);
+  addBtn.onclick = ()=> pickProductThen("Para saang Produkto ang Gastos?", pid=>openGastosForm({productId:pid}));
+  wrap.appendChild(addBtn);
+
+  return wrap;
+}
+
+function viewExpenseType(typeId){
+  const t = getExpenseType(typeId);
+  const wrap = el(`<div></div>`);
+  if(!t){ wrap.appendChild(el(`<p>Hindi nahanap.</p>`)); return wrap; }
+  const back = el(`<button class="back">←</button>`);
+  back.onclick = ()=> go("gastos");
+  const top = el(`<div class="topbar"></div>`);
+  top.appendChild(back);
+  top.appendChild(el(`<h1>${t.emoji} ${t.name}</h1>`));
+  wrap.appendChild(top);
+
+  const list = entriesForExpenseType(typeId).sort((a,b)=>(b.date+b.createdAt).localeCompare(a.date+a.createdAt));
+  const total = list.reduce((s,e)=>s+(Number(e.amount)||0),0);
+
+  wrap.appendChild(el(`
+    <div class="card">
+      <div class="stat-box red"><div class="label">KABUUANG GASTOS</div><div class="val gastos-text">${formatPeso(total)}</div></div>
+    </div>
+  `));
+
+  const addBtn = el(`<button class="btn btn-red" style="margin-bottom:14px;">➖ Magdagdag ng Gastos</button>`);
+  addBtn.onclick = ()=> pickProductThen("Para saang Produkto ang Gastos?", pid=>openGastosForm({expenseTypeId:typeId, productId:pid}));
+  wrap.appendChild(addBtn);
+
+  const listCard = el(`<div class="card"><h3>Talaan</h3></div>`);
+  if(list.length===0){
+    listCard.appendChild(el(`<div class="empty-state"><div class="e">📝</div><p>Wala pang entries.</p></div>`));
+  } else {
+    list.forEach(e=>{
+      const prod = e.productId ? getProduct(e.productId) : null;
+      const item = el(`
+        <div class="entry-item">
+          <div class="entry-icon gastos">⬇️</div>
+          <div class="entry-main">
+            <div class="t1">${prod ? (prod.emoji+" "+prod.name) : "Pangkalahatan"}${e.note?(" · "+escapeHtml(e.note)):""}</div>
+            <div class="t2">${e.date}</div>
+          </div>
+          <div class="entry-amt gastos-text">-${formatPeso(e.amount)}</div>
+        </div>
+      `);
+      item.style.cursor = "pointer";
+      item.onclick = ()=> openEntryDetail(e.id);
+      listCard.appendChild(item);
+    });
+  }
+  wrap.appendChild(listCard);
+  return wrap;
+}
+
+function openExpenseTypeModal(){
+  const body = el(`<div></div>`);
+  body.appendChild(el(`<h3>＋ Bagong Uri ng Gastos</h3>`));
+  body.appendChild(el(`<label>Pangalan</label>`));
+  const nameInp = el(`<input type="text" placeholder="hal. Gasolina, Kuryente, Binhi">`);
+  body.appendChild(nameInp);
+
+  const EXP_EMOJIS = ["📝","🌾","🧴","👷","🐣","⛽","💡","🚜","🧰","🌱","🧂","🪣","🧵","🐛","🌧️","🔧"];
+  body.appendChild(el(`<label>Piliin ang Icon</label>`));
+  const grid = el(`<div class="emoji-grid"></div>`);
+  let selEmoji = EXP_EMOJIS[0];
+  EXP_EMOJIS.forEach((em,i)=>{
+    const b = document.createElement("button");
+    b.textContent = em;
+    if(i===0) b.className="sel";
+    b.onclick = ()=>{ selEmoji=em; [...grid.children].forEach(x=>x.className=""); b.className="sel"; };
+    grid.appendChild(b);
+  });
+  body.appendChild(grid);
+
+  const saveBtn = el(`<button class="btn btn-green" style="margin-top:16px;">I-save</button>`);
+  saveBtn.onclick = ()=>{
+    const name = nameInp.value.trim();
+    if(!name){ showToast("Ilagay ang pangalan"); return; }
+    DATA.expenseTypes.push({id: uid(), name:name, emoji:selEmoji, archived:false});
+    saveData(); closeModal(); render(); showToast("Naidagdag! ✅");
+  };
+  body.appendChild(saveBtn);
+  openModal(body);
+}
+
+function openExpenseTypeManage(t){
+  const body = el(`<div></div>`);
+  body.appendChild(el(`<h3>${t.emoji} ${t.name}</h3>`));
+  const archBtn = el(`<button class="btn btn-outline" style="margin-top:8px;">${t.archived?"↩️ I-restore":"📥 I-archive"}</button>`);
+  archBtn.onclick = ()=>{
+    t.archived = !t.archived;
+    saveData(); closeModal(); render();
+  };
+  body.appendChild(archBtn);
+  const delBtn = el(`<button class="btn btn-outline" style="margin-top:8px; color:var(--red); border-color:var(--red);">🗑️ Burahin nang Tuluyan</button>`);
+  delBtn.onclick = ()=>{
+    if(!confirm("Sigurado ka bang burahin ang uri ng gastos na ito pati lahat ng entries nito? Hindi na ito maibabalik.")) return;
+    DATA.expenseTypes = DATA.expenseTypes.filter(x=>x.id!==t.id);
+    DATA.entries = DATA.entries.filter(e=>!(e.type==="gastos" && e.expenseTypeId===t.id));
+    saveData(); closeModal(); go("gastos");
+  };
+  body.appendChild(delBtn);
+  openModal(body);
+}
+
+/* ---------- REPORTS VIEW ---------- */
+let REPORT_PRODUCT = "all";
+let REPORT_RANGE = "month";
+
+function viewReports(){
+  const wrap = el(`<div></div>`);
+  wrap.appendChild(el(`<h1>📊 Ulat</h1>`));
+
+  const seg = el(`<div class="seg"></div>`);
+  [["today","Ngayon"],["week","Linggo"],["month","Buwan"],["year","Taon"],["all","Lahat"]].forEach(([k,l])=>{
+    const b = document.createElement("button");
+    b.textContent=l; b.className = REPORT_RANGE===k?"active":"";
+    b.onclick = ()=>{ REPORT_RANGE=k; render(); };
+    seg.appendChild(b);
+  });
+  wrap.appendChild(seg);
+
+  const sel = el(`<select style="margin-bottom:14px;"></select>`);
+  sel.appendChild(el(`<option value="all">Lahat ng Produkto</option>`));
+  DATA.products.forEach(c=>{
+    const o = document.createElement("option");
+    o.value=c.id; o.textContent = c.emoji+" "+c.name;
+    if(REPORT_PRODUCT===c.id) o.selected=true;
+    sel.appendChild(o);
+  });
+  sel.value = REPORT_PRODUCT;
+  sel.onchange = ()=>{ REPORT_PRODUCT = sel.value; render(); };
+  wrap.appendChild(sel);
+
+  let entries = DATA.entries.filter(e=>inRange(e.date, REPORT_RANGE));
+  if(REPORT_PRODUCT!=="all") entries = entries.filter(e=>e.productId===REPORT_PRODUCT);
+  const t = totalsFor(entries);
+
+  wrap.appendChild(el(`
+    <div class="card">
+      <div class="grid3">
+        <div class="stat-box"><div class="label">KITA</div><div class="val kita-text">${formatPeso(t.kita)}</div></div>
+        <div class="stat-box red"><div class="label">GASTOS</div><div class="val gastos-text">${formatPeso(t.gastos)}</div></div>
+        <div class="stat-box" style="background:${t.net>=0?'var(--green-light)':'var(--red-light)'};"><div class="label">NET</div><div class="val" style="color:${t.net>=0?'var(--green-dark)':'var(--red)'};">${formatPeso(t.net)}</div></div>
+      </div>
+    </div>
+  `));
+
+  if(REPORT_PRODUCT==="all"){
+    const bd = el(`<div class="card"><h3>Kita Ayon sa Produkto</h3></div>`);
+    let anyKita = false;
+    DATA.products.forEach(c=>{
+      const ce = entries.filter(e=>e.productId===c.id && e.type==="kita");
+      if(ce.length===0) return;
+      anyKita = true;
+      const sum = ce.reduce((s,e)=>s+(Number(e.amount)||0),0);
+      bd.appendChild(el(`
+        <div class="row between" style="padding:6px 0; border-bottom:1px solid var(--line);">
+          <span>${c.emoji} ${c.name}</span>
+          <span style="font-weight:700;" class="kita-text">${formatPeso(sum)}</span>
+        </div>
+      `));
+    });
+    if(!anyKita) bd.appendChild(el(`<p class="muted">Walang Kita sa napiling saklaw.</p>`));
+    wrap.appendChild(bd);
+
+    const bd2 = el(`<div class="card"><h3>Gastos Ayon sa Uri</h3></div>`);
+    let anyGastos = false;
+    DATA.expenseTypes.forEach(et=>{
+      const ee = entries.filter(e=>e.type==="gastos" && e.expenseTypeId===et.id);
+      if(ee.length===0) return;
+      anyGastos = true;
+      const sum = ee.reduce((s,e)=>s+(Number(e.amount)||0),0);
+      bd2.appendChild(el(`
+        <div class="row between" style="padding:6px 0; border-bottom:1px solid var(--line);">
+          <span>${et.emoji} ${et.name}</span>
+          <span style="font-weight:700;" class="gastos-text">${formatPeso(sum)}</span>
+        </div>
+      `));
+    });
+    if(!anyGastos) bd2.appendChild(el(`<p class="muted">Walang Gastos sa napiling saklaw.</p>`));
+    wrap.appendChild(bd2);
+  }
+
+  const listCard = el(`<div class="card"><h3>Talaan (${entries.length})</h3></div>`);
+  const sorted = [...entries].sort((a,b)=>(b.date+b.createdAt).localeCompare(a.date+a.createdAt));
+  if(sorted.length===0){
+    listCard.appendChild(el(`<div class="empty-state"><div class="e">📄</div><p>Walang entries sa napiling saklaw.</p></div>`));
+  } else {
+    sorted.slice(0,200).forEach(e=>{
+      const prod = e.productId ? getProduct(e.productId) : null;
+      const et = e.type==="gastos" ? getExpenseType(e.expenseTypeId) : null;
+      const label = e.type==="kita" ? (prod?prod.emoji+" "+prod.name:"?") : (et?et.emoji+" "+et.name:"Gastos")+(prod?(" · "+prod.name):"");
+      listCard.appendChild(el(`
+        <div class="entry-item">
+          <div class="entry-icon ${e.type}">${e.type==="kita"?"⬆️":"⬇️"}</div>
+          <div class="entry-main">
+            <div class="t1">${label} ${e.note?("· "+escapeHtml(e.note)):""}</div>
+            <div class="t2">${e.date}</div>
+          </div>
+          <div class="entry-amt ${e.type==="kita"?"kita-text":"gastos-text"}">${e.type==="kita"?"+":"-"}${formatPeso(e.amount)}</div>
+        </div>
+      `));
+    });
+  }
+  wrap.appendChild(listCard);
+
+  const exportBtn = el(`<button class="btn btn-outline" style="margin-top:4px;">⬇️ I-export bilang CSV</button>`);
+  exportBtn.onclick = ()=> exportCSV(sorted);
+  wrap.appendChild(exportBtn);
+
+  return wrap;
+}
+
+function exportCSV(entries){
+  if(entries.length===0){ showToast("Walang idede-export"); return; }
+  let csv = "Petsa,Uri,Produkto,Uri ng Gastos,Halaga,Dami,Unit,Tala\n";
+  entries.forEach(e=>{
+    const prod = e.productId ? getProduct(e.productId) : null;
+    const et = e.type==="gastos" ? getExpenseType(e.expenseTypeId) : null;
+    const row = [
+      e.date,
+      e.type==="kita"?"Kita":"Gastos",
+      prod ? prod.name : (e.type==="gastos" ? "Pangkalahatan" : ""),
+      et ? et.name : "",
+      e.amount,
+      e.qty||"",
+      prod?prod.unit:"",
+      (e.note||"").replace(/,/g," ")
+    ];
+    csv += row.join(",")+"\n";
+  });
+  downloadFile("farmbook-ulat-"+todayStr()+".csv", csv, "text/csv");
+  showToast("Na-export! Tingnan sa Downloads.");
+}
+
+function downloadFile(filename, content, mime){
+  const blob = new Blob([content], {type:mime});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(()=>{ document.body.removeChild(a); URL.revokeObjectURL(url); }, 500);
+}
+
+/* ---------- SETTINGS VIEW ---------- */
+function viewSettings(){
+  const wrap = el(`<div></div>`);
+  wrap.appendChild(el(`<h1>⚙️ Settings</h1>`));
+
+  wrap.appendChild(el(`<h2>Account</h2>`));
+  const acctCard = el(`<div class="card"></div>`);
+  acctCard.appendChild(el(`<p class="muted">Naka-login bilang:<br><b>${CURRENT_USER ? escapeHtml(CURRENT_USER.email) : "?"}</b></p>`));
+  const logoutBtn = el(`<button class="btn btn-outline">🚪 Mag-logout</button>`);
+  logoutBtn.onclick = ()=>{ signOut(auth); };
+  acctCard.appendChild(logoutBtn);
+  wrap.appendChild(acctCard);
+
+  wrap.appendChild(el(`<h2>Mga Produkto</h2>`));
+  const catCard = el(`<div class="card"></div>`);
+  DATA.products.forEach(c=>{
+    const row = el(`<div class="row between" style="padding:8px 0; border-bottom:1px solid var(--line); cursor:pointer;"><span>${c.emoji} ${c.name}${c.archived?' <span class="pill red">Archived</span>':''}</span><span>⋯</span></div>`);
+    row.onclick = ()=> openProductManage(c);
+    catCard.appendChild(row);
+  });
+  const addC = el(`<button class="btn btn-green" style="margin-top:10px;">＋ Bagong Produkto</button>`);
+  addC.onclick = ()=> openProductModal();
+  catCard.appendChild(addC);
+  wrap.appendChild(catCard);
+
+  wrap.appendChild(el(`<h2>Mga Uri ng Gastos</h2>`));
+  const typeCard = el(`<div class="card"></div>`);
+  DATA.expenseTypes.forEach(t=>{
+    const row = el(`<div class="row between" style="padding:8px 0; border-bottom:1px solid var(--line); cursor:pointer;"><span>${t.emoji} ${t.name}${t.archived?' <span class="pill red">Archived</span>':''}</span><span>⋯</span></div>`);
+    row.onclick = ()=> openExpenseTypeManage(t);
+    typeCard.appendChild(row);
+  });
+  const addT = el(`<button class="btn btn-red" style="margin-top:10px;">＋ Bagong Uri ng Gastos</button>`);
+  addT.onclick = ()=> openExpenseTypeModal();
+  typeCard.appendChild(addT);
+  wrap.appendChild(typeCard);
+
+  wrap.appendChild(el(`<h2>Backup ng Data</h2>`));
+  const backupCard = el(`<div class="card"></div>`);
+  backupCard.appendChild(el(`<p class="muted">I-save ang backup file paminsan-minsan para hindi mawala ang iyong mga tala.</p>`));
+  const expBtn = el(`<button class="btn btn-green" style="margin-bottom:10px;">⬇️ I-download ang Backup</button>`);
+  expBtn.onclick = ()=>{
+    downloadFile("farmbook-backup-"+todayStr()+".json", JSON.stringify(DATA,null,2), "application/json");
+    showToast("Na-download ang backup");
+  };
+  backupCard.appendChild(expBtn);
+
+  const fileInp = el(`<input type="file" accept=".json" style="display:none;">`);
+  const impBtn = el(`<button class="btn btn-outline">⬆️ I-restore mula sa Backup</button>`);
+  impBtn.onclick = ()=> fileInp.click();
+  fileInp.onchange = (ev)=>{
+    const file = ev.target.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = ()=>{
+      try{
+        const parsed = JSON.parse(reader.result);
+        if(!parsed.products || !parsed.entries){ showToast("Hindi valid na backup file"); return; }
+        if(!confirm("Papalitan nito ang lahat ng kasalukuyang data ng data mula sa backup file. Magpatuloy?")) return;
+        DATA = migrate(parsed);
+        saveData(); render(); showToast("Na-restore ang data! ✅");
+      }catch(e){ showToast("May error sa pagbasa ng file"); }
+    };
+    reader.readAsText(file);
+  };
+  backupCard.appendChild(impBtn);
+  backupCard.appendChild(fileInp);
+  wrap.appendChild(backupCard);
+
+  wrap.appendChild(el(`<h2>Iba pa</h2>`));
+  const dangerCard = el(`<div class="card"></div>`);
+  const clearBtn = el(`<button class="btn btn-outline" style="color:var(--red); border-color:var(--red);">🗑️ Burahin Lahat ng Data</button>`);
+  clearBtn.onclick = ()=>{
+    if(!confirm("Buburahin ang LAHAT ng produkto, uri ng gastos, kita, gastos, at stock. Hindi na ito maibabalik maliban kung may backup ka. Magpatuloy?")) return;
+    DATA = defaultData();
+    saveData(); go("home"); showToast("Nabura na ang lahat ng data");
+  };
+  dangerCard.appendChild(clearBtn);
+  wrap.appendChild(dangerCard);
+
+  wrap.appendChild(el(`<p class="muted" style="text-align:center; margin-top:18px;">CookingIndayFarmApp 2 · v3.0 · Naka-save sa cloud (Firebase) at nake-sync sa lahat ng device na naka-login sa parehong account.</p>`));
+  return wrap;
+}
+
+/* ---------- MODAL HELPERS ---------- */
+function openModal(bodyEl){
+  closeModal();
+  const bg = document.createElement("div");
+  bg.className = "modal-bg";
+  bg.id = "modalBg";
+  bg.onclick = (ev)=>{ if(ev.target===bg) closeModal(); };
+  const modal = document.createElement("div");
+  modal.className = "modal";
+  modal.appendChild(el(`<div class="modal-handle"></div>`));
+  modal.appendChild(bodyEl);
+  bg.appendChild(modal);
+  document.body.appendChild(bg);
+}
+function closeModal(){
+  const bg = document.getElementById("modalBg");
+  if(bg) bg.remove();
+}
+
+/* ---------- LOGIN VIEW (Firebase Auth gate) ---------- */
+function renderLogin(errorMsg){
+  const app = document.getElementById("app");
+  app.innerHTML = "";
+  document.getElementById("navbar").innerHTML = "";
+  const wrap = el(`<div style="padding-top:50px;"></div>`);
+  wrap.appendChild(el(`<div style="text-align:center; font-size:50px;">🌾</div>`));
+  wrap.appendChild(el(`<h1 style="text-align:center;">CookingIndayFarmApp 2</h1>`));
+  wrap.appendChild(el(`<p class="muted" style="text-align:center; margin-bottom:20px;">Mag-login gamit ang password ng pamilya para makita ang datos ng sakahan.</p>`));
+  const card = el(`<div class="card"></div>`);
+  card.appendChild(el(`<label>Email</label>`));
+  const emailInp = el(`<input type="text" inputmode="email" autocomplete="username" placeholder="email">`);
+  card.appendChild(emailInp);
+  card.appendChild(el(`<label>Password</label>`));
+  const passInp = el(`<input type="password" autocomplete="current-password" placeholder="password">`);
+  card.appendChild(passInp);
+  const errEl = el(`<p class="muted" style="color:var(--red); display:${errorMsg?"block":"none"};">${errorMsg?escapeHtml(errorMsg):""}</p>`);
+  card.appendChild(errEl);
+  const btn = el(`<button class="btn btn-green" style="margin-top:16px;">Mag-login</button>`);
+  btn.onclick = ()=>{
+    const email = emailInp.value.trim();
+    const pass = passInp.value;
+    if(!email || !pass){ errEl.textContent = "Punan ang email at password."; errEl.style.display="block"; return; }
+    btn.textContent = "Naglo-login...";
+    signInWithEmailAndPassword(auth, email, pass).catch(()=>{
+      btn.textContent = "Mag-login";
+      errEl.textContent = "Mali ang email o password. Subukan ulit.";
+      errEl.style.display = "block";
+    });
+  };
+  card.appendChild(btn);
+  wrap.appendChild(card);
+  app.appendChild(wrap);
+  setTimeout(()=>emailInp.focus(), 200);
+}
+
+/* ---------- BOOT: wait for Firebase Auth, then load the shared data ---------- */
+function attachDataListener(){
+  if(UNSUB_SNAPSHOT) UNSUB_SNAPSHOT();
+  UNSUB_SNAPSHOT = onSnapshot(sharedDocRef, (snap)=>{
+    if(snap.exists()){
+      DATA = migrate(snap.data());
+    } else {
+      DATA = defaultData();
+      setDoc(sharedDocRef, DATA).catch(err=>console.error("Initial write failed", err));
+    }
+    render();
+  }, (err)=>{
+    console.error("Firestore listen error", err);
+    showToast("May problema sa pag-connect sa cloud data.");
+  });
+}
+
+function bootApp(){
+  const app = document.getElementById("app");
+  app.innerHTML = `<div style="padding:80px 20px; text-align:center;"><div style="font-size:40px;">🌾</div><p class="muted">Naglo-load...</p></div>`;
+  onAuthStateChanged(auth, (user)=>{
+    if(user){
+      CURRENT_USER = user;
+      attachDataListener();
+    } else {
+      CURRENT_USER = null;
+      if(UNSUB_SNAPSHOT){ UNSUB_SNAPSHOT(); UNSUB_SNAPSHOT = null; }
+      renderLogin();
+    }
+  });
+}
+
+/* ---------- INIT ---------- */
+bootApp();
+</script>
+</body>
+</html>
